@@ -1,0 +1,28 @@
+			<section>
+				<table>
+					<caption>Organizations</caption>
+					<tr>
+						<th>Name</th>
+						<th>Unapproved</th>
+						<th>Last 4 Months</th>
+					</tr>
+<% if @organizations.any? %>
+	<% @organizations.each do |org| %>
+<%= render "listing", org: org %>
+	<% end %>
+<% end %>
+					<tr class="create">
+						<td colspan="4">
+							<h3>Create new:</h3>
+							<%= form_for Organization.new, remote: true do |f| %>
+								<p>
+									<%= f.text_field :name, required: true %>
+									<%= f.submit "Create", :class => "button button-okay" %>
+								</p>
+								<p>
+								</p>
+							<% end %>
+						</td>
+					</tr>
+				</table>
+			</section>

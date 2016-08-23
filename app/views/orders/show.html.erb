@@ -1,0 +1,95 @@
+		<div class="actions">
+			<p>
+				<%= link_to "Back to Orders", orders_path, :class => "button button-okay" %>
+<% if can? :edit, @order %>
+				<%= link_to "Edit Order", edit_order_path(@order), :class => "button button-neutral" %>
+<% end %>
+<% if can? :destroy, @order %>
+				<%= link_to "Remove Order", @order, method: :delete, :class => "button button-alert", data: {confirm: "Are you sure you want to remove the order #{@order.name}?"} %>
+<% end %>
+			</p>
+		</div>
+
+		<section>
+			<h2>Order: <%= @order.name %></h2>
+			<article>
+				<p>
+					<em>Status:</em> <%= @order.status %><%= " (" + @order.creative.name + ")" unless @order.creative.nil? %><br>
+					<em>Due date:</em> <%= @order.due_date %><br>
+					<em>Requested by:</em> <%= @order.organization.name unless @order.organization.nil? %> - <%= @order.owner.name unless @order.owner.nil? %>
+				</p>
+
+				<h3>Description</h3>
+				<%= simple_format(@order.description) %>
+			</article>
+		</section>
+
+		<aside>
+			<h2>More Info</h2>
+
+			<article class="needs">
+				<h3>Needs</h3>
+				<ul>
+<% @needs.each do |need| %>
+	<% need_param = need.parameterize.underscore %>
+	<% unless @order.needs[need_param].nil? %>
+					<li>
+						<em><%= need %></em> <%= @order.needs[need_param] %>
+					</li>
+	<% end %>
+<% end %>
+				</ul>
+			</article>
+<% unless @order.event.nil? || @order.event.empty? %>
+			<article>
+				<h3>Event Information</h3>
+				<p>
+	<% if @order.event['time'].present? %>
+					<em>When:</em> <%= @order.event['time'] %><br>
+	<% end %>
+	<% if @order.event['location'].present? %>
+					<em>Where:</em> <%= @order.event['location'] %>
+	<% end %>
+				</p>
+			</article>
+<% end %>
+			<article>
+<% unless @owner.nil? %>
+				<h3>About the Requester</h3>
+				<p>
+					<%= @owner.name %><br>
+					Member of <%= @organization.name %><br>
+					<a href="mailto:<%= @owner.email %>"><%= @owner.email %></a><br>
+					<%= @owner.phone %>
+				</p>
+<% else %>
+				<p>The order's owner has been removed.</p>
+<% end %>
+			</article>
+
+<% if @creative == current_user %>
+			<article>
+				<h3>Change Status</h3>
+				<%= form_for @order, url: change_status_order_path(@order), method: :put, remote: true do |f| %>
+					<%= f.select :status, Order.statuses, include_blank: "Select Status" %>
+					<%= f.submit "Update", :class => "button button-neutral", :id => "status-#{@order.id}" %>
+				<% end %>
+	<% if can? :unclaim, @order %>
+				<p><%= link_to "Unclaim", unclaim_order_path(@order), method: :put, :class => "button button-alert" %></p>
+	<% end %>
+			</article>
+<% end %>
+
+<% if @order.status == "Unclaimed" && can?(:claim, @order) %>
+			<article class="claim">
+				<p><%= link_to "Claim", claim_order_path(@order), method: :put, :id => "claim-#{@order.id}", :class => "button button-okay" %></p>
+			</article>
+<% end %>
+
+			<article>
+				<p>Last activity: <%= @order.updated_at.strftime("%-m/%-d/%Y") %>.</p>
+<% if can? :manage, Order %>
+				<p>Order Created: <%= @order.created_at.strftime("%-m/%-d/%Y") %>.</p>
+<% end %>
+			</article>
+		</aside>

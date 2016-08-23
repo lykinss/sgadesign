@@ -1,0 +1,38 @@
+			<section>
+				<h2>Welcome to SGA Design</h2>
+				<article class="intro">
+					<p>This is the work order management system for SGA Communications.  Members of SGA can submit requests for Graphics and Web work here. If you do not yet have an account, you can apply for one using the link below. Once an administrator approves your account, you'll be able to create and manage your work orders.</p>
+					<p>Please note that the majority of the user accounts are tied to an @ucf.edu e-mail. If you have inherited a position with such an e-mail, there's probably already an account waiting for you. Contact Dr. Preston if you need assistance.</p>
+					<p>Feel free to contact your advisor with any questions.</p>
+					<p>
+<% if user_signed_in? %>
+	<% if current_user.role == "Unapproved" %>
+						Your account will be approved by an administrator soon.
+	<% else %>
+						<%= link_to "Manage Orders", orders_path, :class => "button button-okay" %>
+	<% end %>
+<% else %>
+						<%= link_to "Apply for an Account", new_registration_path(resource_name), :class => "button button-okay" %>
+					</p>
+<% end %>
+				</article>
+			</section>
+
+			<aside>
+<% if user_signed_in? %>
+				<h2>Quick Look</h2>
+				<article>
+					<p>Unapproved Orders: <%= @unapproved_orders %></p>
+					<p>Unclaimed Orders: <%= @unclaimed_orders %></p>
+					<p>Claimed Orders: <%= @claimed_orders %></p>
+				</article>
+	<% if can? :manage, User %>
+				<article>
+					<p>Unapproved Users: <%= @unapproved_users %></p>
+				</article>
+	<% end %>
+<% else %>
+				<h2>Sign In</h2>
+<%= render "devise/sessions/form" %>
+<% end %>
+			</aside>

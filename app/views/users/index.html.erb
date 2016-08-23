@@ -1,0 +1,47 @@
+			<section>
+<% if @unapproved.any? %>
+				<table>
+					<caption>Unapproved Users</caption>
+					<tr>
+						<th>Name</th>
+						<th>E-Mail</th>
+						<th></th>
+					</tr>
+	<% @unapproved.each do |user| %>
+					<tr>
+						<th><%= user.name %></th>
+						<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
+						<td>
+<% if can? :update, user %>
+							<%= link_to "Edit Profile", user, :class => "button button-okay" %>
+<% end %>
+						</td>
+					</tr>
+	<% end %>
+				</table>
+<% end %>
+
+				<table>
+					<caption>Users</caption>
+					<tr>
+						<th>Name</th>
+						<th>E-Mail</th>
+						<th>Organizations</th>
+						<th>Role</th>
+						<th></th>
+					</tr>
+<% @users.each do |user| %>
+					<tr>
+						<th><%= user.name %></th>
+						<td><a href="mailto:<%= user.email %>"><%= user.email %></a></td>
+						<td class="orgs"><%= user.organizations.map(&:name).join(', ') %></td>
+						<td><%= user.role %></td>
+						<td>
+<% if can? :update, user %>
+							<%= link_to "Profile", user, :class => "button button-neutral" %>
+<% end %>
+						</td>
+					</tr>
+<% end %>
+				</table>
+			</section>

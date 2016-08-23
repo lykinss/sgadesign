@@ -1,0 +1,82 @@
+				<%= form_for @order do |f| %>
+<% if @order.errors.any? %>
+	<% @order.errors.full_messages.each do |msg| %>
+					<p class="flash alert"><%= msg %></p>
+	<% end %>
+<% end %>
+					<fieldset class="flavor">
+<% if @order.flavor.nil? %>
+						<ul>
+							<li><%= f.radio_button :flavor, "Graphics", checked: true, :data => {:flavor => "graphics"} %> <%= f.label :flavor_graphics, "Graphics" %></li>
+							<li><%= f.radio_button :flavor, "Web", :data => {:flavor => "web"} %> <%= f.label :flavor_web, "Web" %></li>
+						</ul>
+<% else %>
+						<%= f.hidden_field :flavor %>
+<% end %>
+					</fieldset>
+
+					<fieldset class="general">
+						<h3>General Information</h3>
+						<p>
+							<%= f.label :name, "Order Name" %> <span>*</span><br>
+							<%= f.text_field :name, autofocus: true, required: true %>
+						</p>
+						<p>
+							<%= f.label :due, "Due Date (mm/dd/yyyy)" %> <span>*</span><br>
+							<%= f.text_field :due, required: true, value: @order.due.present? ? @order.due.strftime("%m/%d/%Y") : "", :class => "datepicker" %>
+						</p>
+						<p>
+<% if current_user.organizations.count > 1 && @can_edit_organization %>
+							<%= f.label :organization_id %> <span>*</span><br>
+							<%= f.select :organization_id, current_user.organizations.collect {|o| [o.name, o.id]} %>
+<% else %>
+							<%= f.hidden_field :organization_id, :value => (@order.organization_id || current_user.organizations.first.id) %>
+<% end %>
+						</p>
+					</fieldset>
+
+					<fieldset class="event">
+						<h3>Event Information</h3>
+						<%= f.fields_for :event do |e| %>
+							<p>
+								<%= e.label :time, "Event Date / Time" %><br>
+								<%= e.text_field :time, value: @order.event["time"] %>
+							</p>
+
+							<p>
+								<%= e.label :location, "Event Location" %><br>
+								<%= e.text_field :location, value: @order.event["location"] %>
+							</p>
+						<% end %>
+					</fieldset>
+
+					<fieldset class="needs">
+						<h3>Needs <span>*</span></h3>
+<% if @order.flavor.nil? %>
+						
+<%= render partial: "orders/form/graphics", locals: {f: f, display: "block"} %>
+
+<%= render partial: "orders/form/web", locals: {f: f, display: "none"} %>
+
+<% else %>
+
+	<% case @order.flavor %>
+	<% when "Graphics" %>
+<%= render partial: "orders/form/graphics", locals: {f: f, display: "block"} %>
+	<% when "Web" %>
+<%= render partial: "orders/form/web", locals: {f: f, display: "block"} %>
+	<% end %>
+<% end %>
+					</fieldset>
+
+					<fieldset class="description">
+						<h3>Description <span>*</span></h3>
+						<p>
+							<%= f.text_area :description, required: true %>
+						</p>
+					</fieldset>
+
+					<p class="submit"><%= f.submit "Submit", :class => "button button-okay" %></p>
+				<% end %>
+
+<%= render "modals" %>

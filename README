@@ -1,0 +1,10 @@
+Hello there.
+
+This directory (/var/www/sgadesign-app) holds the application files for SGA's
+copy of CreativeQ. I suggest that you do not attempt to modify files within
+this directory, as there is no recourse. Whereas CreativeQ can be redeployed
+somewhat easily from its Git repository, there is no repository backing this
+application.
+
+SGA's DesignQ does not get any updates, as does CreativeQ. If there are any
+major issues with its use, please contact aj.foster@knights.ucf.edu.
